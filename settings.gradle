@@ -1,1 +1,1 @@
-include ':sample', ':library', ':testlibrary'
+include ':sample', ':library'
