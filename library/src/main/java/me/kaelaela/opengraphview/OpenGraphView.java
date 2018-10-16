@@ -270,6 +270,10 @@ public class OpenGraphView extends RelativeLayout {
         return this.mRoundableImageView;
     }
 
+    public void setRoundableImageView(RoundableImageView imageView) {
+        this.mRoundableImageView = imageView;
+    }
+
     public void loadImage(final String url) {
         /*
         mRoundableImageView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
