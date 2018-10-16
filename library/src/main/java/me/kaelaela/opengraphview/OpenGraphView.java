@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
 
 import me.kaelaela.opengraphview.network.DefaultTaskManager;
 import me.kaelaela.opengraphview.network.model.OGData;
@@ -284,7 +285,11 @@ public class OpenGraphView extends RelativeLayout {
 
         Log.d("OpenGraphView", "loadImage from url: " + url);
 
-        Glide.with(getContext()).load(url).transition(DrawableTransitionOptions.withCrossFade()).into(mRoundableImageView);
+        Glide.with(getContext())
+                .load(url)
+                .apply(new RequestOptions().centerCrop())
+//                .transition(DrawableTransitionOptions.withCrossFade())
+                .into(mRoundableImageView);
 
 //        Bitmap bitmap = mOGCache.getImage(url);
 //        if (bitmap == null) {
