@@ -285,7 +285,7 @@ public class OpenGraphView extends RelativeLayout {
 
         Log.d("OpenGraphView", "loadImage from url: " + url);
 
-        Glide.with(getContext())
+        Glide.with(mRoundableImageView.getContext())
                 .load(url)
                 .apply(new RequestOptions().centerCrop())
 //                .transition(DrawableTransitionOptions.withCrossFade())
