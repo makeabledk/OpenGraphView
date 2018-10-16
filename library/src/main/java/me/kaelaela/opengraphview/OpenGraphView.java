@@ -12,20 +12,21 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.URLUtil;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+
 import me.kaelaela.opengraphview.network.DefaultTaskManager;
 import me.kaelaela.opengraphview.network.model.OGData;
 import me.kaelaela.opengraphview.network.tasks.BaseTask;
 import me.kaelaela.opengraphview.network.tasks.FaviconCallable;
 import me.kaelaela.opengraphview.network.tasks.FaviconTask;
-import me.kaelaela.opengraphview.network.tasks.ImageCallable;
-import me.kaelaela.opengraphview.network.tasks.ImageTask;
 import me.kaelaela.opengraphview.network.tasks.OGDataCallable;
 import me.kaelaela.opengraphview.network.tasks.OGDataTask;
 
@@ -264,23 +265,40 @@ public class OpenGraphView extends RelativeLayout {
     }
 
     private void loadImage(final String url) {
-        Bitmap bitmap = mOGCache.getImage(url);
-        if (bitmap == null) {
-            mTaskManager.execute(new ImageTask(new ImageCallable(url), new BaseTask.OnLoadListener<Bitmap>() {
-                @Override
-                public void onLoadSuccess(Bitmap bitmap) {
-                    mOGCache.addImage(url, bitmap);
-                    setImage(bitmap);
-                }
-
-                @Override
-                public void onLoadError(Throwable e) {
-                    setImage(null);
-                }
-            }));
-        } else {
-            setImage(bitmap);
+        /*
+        mRoundableImageView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+        mRoundableImageView.setVisibility(bitmap == null ? GONE : VISIBLE);
+        mSeparator.setVisibility(bitmap == null ? GONE : VISIBLE);
+        mRoundableImageView.setImageBitmap(bitmap);
+        if (bitmap != null) {
+            ImageAnimator.alphaAnimation(mRoundableImageView);
         }
+        if (mSeparate) {
+            mSeparator.setVisibility(VISIBLE);
+        }
+        * */
+
+        mRoundableImageView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+        mRoundableImageView.setVisibility(View.VISIBLE);
+        Glide.with(getContext()).load(url).transition(DrawableTransitionOptions.withCrossFade()).into(mRoundableImageView);
+
+//        Bitmap bitmap = mOGCache.getImage(url);
+//        if (bitmap == null) {
+//            mTaskManager.execute(new ImageTask(new ImageCallable(url), new BaseTask.OnLoadListener<Bitmap>() {
+//                @Override
+//                public void onLoadSuccess(Bitmap bitmap) {
+//                    mOGCache.addImage(url, bitmap);
+//                    setImage(bitmap);
+//                }
+//
+//                @Override
+//                public void onLoadError(Throwable e) {
+//                    setImage(null);
+//                }
+//            }));
+//        } else {
+//            setImage(bitmap);
+//        }
     }
 
     private void setImage(@Nullable Bitmap bitmap) {
