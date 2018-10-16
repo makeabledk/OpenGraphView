@@ -217,11 +217,13 @@ public class OpenGraphView extends RelativeLayout {
                 @Override
                 public void onLoadSuccess(OGData ogData) {
                     mOGCache.add(url, ogData);
-                    loadImage(ogData.getImage());
                     loadFavicon(mUrl);
                     setOpenGraphData(ogData);
                     if (mOnLoadListener != null) {
                         mOnLoadListener.onLoadFinish();
+                        mOnLoadListener.onLoadImageUrl(ogData.getImage());
+                    } else {
+                        loadImage(ogData.getImage());
                     }
                 }
 
@@ -233,7 +235,11 @@ public class OpenGraphView extends RelativeLayout {
                 }
             }));
         } else {
-            loadImage(ogData.getImage());
+            if (mOnLoadListener != null) {
+                mOnLoadListener.onLoadImageUrl(ogData.getImage());
+            } else {
+                loadImage(ogData.getImage());
+            }
             loadFavicon(mUrl);
             setOpenGraphData(ogData);
         }
@@ -268,10 +274,6 @@ public class OpenGraphView extends RelativeLayout {
 
     public RoundableImageView getRoundableImageView() {
         return this.mRoundableImageView;
-    }
-
-    public void setRoundableImageView(RoundableImageView imageView) {
-        this.mRoundableImageView = imageView;
     }
 
     public void loadImage(final String url) {

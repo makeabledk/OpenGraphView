@@ -9,4 +9,8 @@ public abstract class OnLoadListener {
     
     public void onLoadError(Throwable e) {
     }
+
+    public void onLoadImageUrl(String url) {
+
+    }
 }
