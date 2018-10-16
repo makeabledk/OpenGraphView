@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.URLUtil;
@@ -280,6 +281,9 @@ public class OpenGraphView extends RelativeLayout {
 
         mRoundableImageView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
         mRoundableImageView.setVisibility(View.VISIBLE);
+
+        Log.d("OpenGraphView", "loadImage from url: " + url);
+
         Glide.with(getContext()).load(url).transition(DrawableTransitionOptions.withCrossFade()).into(mRoundableImageView);
 
 //        Bitmap bitmap = mOGCache.getImage(url);
