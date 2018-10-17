@@ -130,7 +130,7 @@ public class OGParser implements Parser {
         int start = line.indexOf(CONTENT_PROPERTY) + CONTENT_PROPERTY.length();
         int end = line.indexOf("\"", start);
 
-        Log.d(tag, "Meta Line: " + line) + ", content property startIndex: " + start + ", content property endIndex: " + end);
+        Log.d(tag, "Meta Line: " + line + ", content property startIndex: " + start + ", content property endIndex: " + end);
 
         if (line.contains(TITLE) || line.contains(TWITTER_TITLE)) {
             ogData.setTitle(line.substring(start, end));
