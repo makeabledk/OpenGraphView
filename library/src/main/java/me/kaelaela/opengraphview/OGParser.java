@@ -79,12 +79,14 @@ public class OGParser implements Parser {
 
         // Fallback title if title was not set yet
         if ((ogData.title == null || ogData.title.isEmpty()) && headContents.contains(TITLE_START_TAG)) {
-            int start = headContents.indexOf(">", headContents.indexOf(TITLE_START_TAG));
+            int start = headContents.indexOf(">", headContents.indexOf(TITLE_START_TAG)) + 1;
             int end = headContents.indexOf(TITLE_END_TAG);
             ogData.setTitle(headContents.substring(start, end));
 
             Log.d(tag, "No og:title tag or twitter:title tag found, falling back to header title");
         }
+
+        Log.d(tag, "Parsed head with result: " + ogData.toString());
 
         bufferedReader.close();
         return ogData;
