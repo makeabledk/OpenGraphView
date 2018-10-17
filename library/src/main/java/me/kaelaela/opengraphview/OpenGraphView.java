@@ -27,6 +27,7 @@ import com.bumptech.glide.request.RequestOptions;
 
 import me.kaelaela.opengraphview.network.DefaultTaskManager;
 import me.kaelaela.opengraphview.network.model.OGData;
+import me.kaelaela.opengraphview.network.model.OpenGraphObject;
 import me.kaelaela.opengraphview.network.tasks.BaseTask;
 import me.kaelaela.opengraphview.network.tasks.FaviconCallable;
 import me.kaelaela.opengraphview.network.tasks.FaviconTask;
@@ -199,7 +200,7 @@ public class OpenGraphView extends RelativeLayout {
 
     @FunctionalInterface
     public interface ParseUrlCompletion {
-        void onCompletion(@Nullable String url, @Nullable String title, @Nullable String description, @Nullable String imageUrl, @Nullable String favIconUrl);
+        void onCompletion(@Nullable OpenGraphObject openGraphObject);
     }
 
     public static void parseUrl(final @Nullable String url, final ParseUrlCompletion completion) {
@@ -221,16 +222,16 @@ public class OpenGraphView extends RelativeLayout {
                 @Override
                 public void onLoadSuccess(OGData ogData) {
                     OGCache.getInstance().add(url, ogData);
-                    completion.onCompletion(ogData.getUrl(), ogData.getTitle(), ogData.getDescription(), ogData.getImage(), favIconUrl);
+                    completion.onCompletion(new OpenGraphObject(url, ogData.getTitle(), ogData.getDescription(), ogData.getImage(), favIconUrl));
                 }
 
                 @Override
                 public void onLoadError(Throwable e) {
-                    completion.onCompletion(null, null, null, null, null);
+                    completion.onCompletion(null);
                 }
             }));
         } else {
-            completion.onCompletion(ogData.getUrl(), ogData.getTitle(), ogData.getDescription(), ogData.getImage(), favIconUrl);
+            completion.onCompletion(new OpenGraphObject(url, ogData.getTitle(), ogData.getDescription(), ogData.getImage(), favIconUrl));
         }
     }
 
