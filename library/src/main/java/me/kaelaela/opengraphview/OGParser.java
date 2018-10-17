@@ -1,5 +1,7 @@
 package me.kaelaela.opengraphview;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +33,8 @@ public class OGParser implements Parser {
     private final String CONTENT_PROPERTY = "content=\"";
 
     private OGData ogData;
+
+    private final String tag = "OpenGraphView.OGParser";
 
     @Override
     public OGData parse(InputStream inputStream) throws IOException {
@@ -77,17 +81,27 @@ public class OGParser implements Parser {
     }
 
     private void parseFromOneLineHeader(String content) {
+
+        Log.d(tag, "parsing header: " + content);
+
         int first = content.indexOf(META_START_TAG), last = content.lastIndexOf(META_START_TAG);
         while (first < last) {
             int tabLength = META_START_TAG.length();
             setOGData(content.substring(first, content.indexOf(META_START_TAG, first + tabLength)));
             first = content.indexOf(META_START_TAG, first + tabLength);
         }
+
+        Log.d(tag, "Parsing result after looking for OpenGraph tags: " + ogData.toString());
+
         // Fallback title
         if ((ogData.title == null || ogData.title.isEmpty()) && content.contains(TITLE_START_TAG)) {
             String title = content.substring(content.indexOf(TITLE_START_TAG), content.indexOf(TITLE_END_TAG));
             ogData.setTitle(title);
+
+            Log.d(tag, "No og:title tag or twitter:title tag found, falling back to header title");
         }
+
+        Log.d(tag, "Parsing result after looking for OpenGraph tags: " + ogData.toString());
     }
 
     private String formattingMetaTags(String headText) {
@@ -120,6 +134,8 @@ public class OGParser implements Parser {
             ogData.setDescription(line.substring(start, end));
         } else if (line.contains(FALLBACK_DESCRIPTION) && (ogData.description == null || ogData.description.isEmpty())) { // Fallback description if not found in OpenGraph.
             ogData.setDescription(line.substring(start, end));
+
+            Log.d(tag, "No og:description tag or twitter:description tag found, falling back to meta description");
         }
     }
 }
