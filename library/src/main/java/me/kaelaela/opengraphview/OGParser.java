@@ -76,32 +76,27 @@ public class OGParser implements Parser {
                 setOGData(sourceTextLine);
             }
         }
+
+        // Fallback title if title was not set yet
+        if ((ogData.title == null || ogData.title.isEmpty()) && headContents.contains(TITLE_START_TAG)) {
+            int start = headContents.indexOf(">", headContents.indexOf(TITLE_START_TAG));
+            int end = headContents.indexOf(TITLE_END_TAG);
+            ogData.setTitle(headContents.substring(start, end));
+
+            Log.d(tag, "No og:title tag or twitter:title tag found, falling back to header title");
+        }
+
         bufferedReader.close();
         return ogData;
     }
 
     private void parseFromOneLineHeader(String content) {
-
-        Log.d(tag, "parsing header: " + content);
-
         int first = content.indexOf(META_START_TAG), last = content.lastIndexOf(META_START_TAG);
         while (first < last) {
             int tabLength = META_START_TAG.length();
             setOGData(content.substring(first, content.indexOf(META_START_TAG, first + tabLength)));
             first = content.indexOf(META_START_TAG, first + tabLength);
         }
-
-        Log.d(tag, "Parsing result after looking for OpenGraph tags: " + ogData.toString());
-
-        // Fallback title
-        if ((ogData.title == null || ogData.title.isEmpty()) && content.contains(TITLE_START_TAG)) {
-            String title = content.substring(content.indexOf(TITLE_START_TAG), content.indexOf(TITLE_END_TAG));
-            ogData.setTitle(title);
-
-            Log.d(tag, "No og:title tag or twitter:title tag found, falling back to header title");
-        }
-
-        Log.d(tag, "Parsing result after looking for OpenGraph tags: " + ogData.toString());
     }
 
     private String formattingMetaTags(String headText) {
@@ -126,7 +121,7 @@ public class OGParser implements Parser {
         int end = line.indexOf("\"", start);
         if (line.contains(TITLE) || line.contains(TWITTER_TITLE)) {
             ogData.setTitle(line.substring(start, end));
-        } else if (line.contains(IMAGE) || line.contains(TWITTER_IMAGE)) {
+        }  else if (line.contains(IMAGE) || line.contains(TWITTER_IMAGE)) {
             ogData.setImage(line.substring(start, end));
         } else if (line.contains(URL) || line.contains(TWITTER_URL)) {
             ogData.setUrl(line.substring(start, end));
