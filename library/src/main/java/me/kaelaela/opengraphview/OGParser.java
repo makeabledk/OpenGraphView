@@ -1,6 +1,7 @@
 package me.kaelaela.opengraphview;
 
 import android.util.Log;
+import android.webkit.URLUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -84,6 +85,13 @@ public class OGParser implements Parser {
             ogData.setTitle(headContents.substring(start, end));
 
             Log.d(tag, "No og:title tag or twitter:title tag found, falling back to header title");
+        }
+
+        // Correct image if not a valid url
+        if (ogData.image != null && !URLUtil.isNetworkUrl(ogData.image)) {
+            ogData.image = null; // If not a valid image, just the a null image url.
+
+            Log.d(tag, "Parsed image url was not a valid URL, returning null url instead.");
         }
 
         Log.d(tag, "Parsed head with result: " + ogData.toString());
