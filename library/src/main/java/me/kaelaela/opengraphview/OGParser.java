@@ -15,6 +15,11 @@ public class OGParser implements Parser {
     private final String URL = "og:url";
     private final String DESC = "og:description";
 
+    // FallBack constants
+    private final String TITLE_START_TAG = "<title>";
+    private final String TITLE_END_TAG = "</title>";
+    private final String FALLBACK_DESCRIPTION = "description";
+
     private final String TWITTER_TITLE = "twitter:title";
     private final String TWITTER_IMAGE = "\"twitter:image\"";
     private final String TWITTER_URL = "twitter:url";
@@ -78,6 +83,11 @@ public class OGParser implements Parser {
             setOGData(content.substring(first, content.indexOf(META_START_TAG, first + tabLength)));
             first = content.indexOf(META_START_TAG, first + tabLength);
         }
+        // Fallback title
+        if ((ogData.title == null || ogData.title.isEmpty()) && content.contains(TITLE_START_TAG)) {
+            String title = content.substring(content.indexOf(TITLE_START_TAG), content.indexOf(TITLE_END_TAG));
+            ogData.setTitle(title);
+        }
     }
 
     private String formattingMetaTags(String headText) {
@@ -107,6 +117,8 @@ public class OGParser implements Parser {
         } else if (line.contains(URL) || line.contains(TWITTER_URL)) {
             ogData.setUrl(line.substring(start, end));
         } else if (line.contains(DESC) || line.contains(TWITTER_DESC)) {
+            ogData.setDescription(line.substring(start, end));
+        } else if (line.contains(FALLBACK_DESCRIPTION) && (ogData.description == null || ogData.description.isEmpty())) { // Fallback description if not found in OpenGraph.
             ogData.setDescription(line.substring(start, end));
         }
     }
