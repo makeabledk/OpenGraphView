@@ -129,6 +129,9 @@ public class OGParser implements Parser {
     private void setOGData(String line) {
         int start = line.indexOf(CONTENT_PROPERTY) + CONTENT_PROPERTY.length();
         int end = line.indexOf("\"", start);
+
+        Log.d(tag, "Meta Line: " + line) + ", content property startIndex: " + start + ", content property endIndex: " + end);
+
         if (line.contains(TITLE) || line.contains(TWITTER_TITLE)) {
             ogData.setTitle(line.substring(start, end));
         }  else if (line.contains(IMAGE) || line.contains(TWITTER_IMAGE)) {
