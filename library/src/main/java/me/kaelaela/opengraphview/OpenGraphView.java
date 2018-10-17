@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
@@ -194,6 +195,43 @@ public class OpenGraphView extends RelativeLayout {
 
     public void setCustomParser(Parser parser) {
         mParser = parser;
+    }
+
+    @FunctionalInterface
+    public interface ParseUrlCompletion {
+        void onCompletion(@Nullable String url, @Nullable String title, @Nullable String description, @Nullable String imageUrl, @Nullable String favIconUrl);
+    }
+
+    public static void parseUrl(final @Nullable String url, final ParseUrlCompletion completion) {
+        if (TextUtils.isEmpty(url) || !URLUtil.isNetworkUrl(url)
+                || url.equals("http://") || url.equals("https://")) {
+            return;
+        }
+
+        // Save favIconUrl
+        Uri uri = Uri.parse(url);
+        String host = uri.getHost().startsWith("www.") ? uri.getHost().substring(4) : uri.getHost();
+        final String favIconUrl = "https://www.google.com/s2/favicons?domain=" + host;
+
+        // Fetch data
+        OGData ogData = OGCache.getInstance().get(url);
+        if (ogData == null) {
+            DefaultTaskManager taskManager = DefaultTaskManager.getInstance();
+            taskManager.execute(new OGDataTask(new OGDataCallable(url, new OGParser()), new BaseTask.OnLoadListener<OGData>() {
+                @Override
+                public void onLoadSuccess(OGData ogData) {
+                    OGCache.getInstance().add(url, ogData);
+                    completion.onCompletion(ogData.getUrl(), ogData.getTitle(), ogData.getDescription(), ogData.getImage(), favIconUrl);
+                }
+
+                @Override
+                public void onLoadError(Throwable e) {
+                    completion.onCompletion(null, null, null, null, null);
+                }
+            }));
+        } else {
+            completion.onCompletion(ogData.getUrl(), ogData.getTitle(), ogData.getDescription(), ogData.getImage(), favIconUrl);
+        }
     }
 
     public void loadFrom(@Nullable final String url) {
